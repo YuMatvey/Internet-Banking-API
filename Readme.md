@@ -44,7 +44,9 @@ GET /api/bank/balance/{userId}
 ```bash
 curl -X GET http://localhost:8080/api/bank/balance/1
 ```
-
+```bash
+Invoke-RestMethod -Uri "http://localhost:8080/api/bank/balance/1" -Method Get
+```
 **Ответ:**
 ```json
 {
@@ -63,7 +65,10 @@ POST /api/bank/deposit?userId={userId}&amount={amount}
 ```bash
 curl -X POST "http://localhost:8080/api/bank/deposit?userId=1&amount=200.00"
 ```
+```bash
+Invoke-RestMethod -Uri "http://localhost:8080/api/bank/deposit?userId=1&amount=200.00" -Method Post
 
+```
 **Ответ:**
 ```json
 {
@@ -82,31 +87,14 @@ POST /api/bank/withdraw?userId={userId}&amount={amount}
 ```bash
 curl -X POST "http://localhost:8080/api/bank/withdraw?userId=2&amount=50.00"
 ```
-
+```bash
+Invoke-RestMethod -Uri "http://localhost:8080/api/bank/withdraw?userId=1&amount=50.00" -Method Post
+```
 **Ответ:**
 ```json
 {
   "status": 1,
   "message": "Операция успешна"
-}
-```
-
-### 4️⃣ Перевод средств
-**Запрос:**
-```
-POST /api/bank/transfer?fromUserId={fromUserId}&toUserId={toUserId}&amount={amount}
-```
-
-**Пример использования:**
-```bash
-curl -X POST "http://localhost:8080/api/bank/transfer?fromUserId=1&toUserId=2&amount=100.00"
-```
-
-**Ответ:**
-```json
-{
-  "status": 1,
-  "message": "Перевод выполнен успешно"
 }
 ```
 
