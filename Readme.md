@@ -44,6 +44,7 @@ GET /api/bank/balance/{userId}
 ```bash
 curl -X GET http://localhost:8080/api/bank/balance/1
 ```
+или
 ```bash
 Invoke-RestMethod -Uri "http://localhost:8080/api/bank/balance/1" -Method Get
 ```
@@ -65,6 +66,7 @@ POST /api/bank/deposit?userId={userId}&amount={amount}
 ```bash
 curl -X POST "http://localhost:8080/api/bank/deposit?userId=1&amount=200.00"
 ```
+или
 ```bash
 Invoke-RestMethod -Uri "http://localhost:8080/api/bank/deposit?userId=1&amount=200.00" -Method Post
 
@@ -87,6 +89,7 @@ POST /api/bank/withdraw?userId={userId}&amount={amount}
 ```bash
 curl -X POST "http://localhost:8080/api/bank/withdraw?userId=2&amount=50.00"
 ```
+или
 ```bash
 Invoke-RestMethod -Uri "http://localhost:8080/api/bank/withdraw?userId=1&amount=50.00" -Method Post
 ```
