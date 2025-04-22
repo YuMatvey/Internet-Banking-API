@@ -11,7 +11,7 @@
 * **H2 Database** (для интеграционных тестов)
 * **Hibernate**
 * **REST API**
-* **Maven** (или Gradle)
+* **Maven**
 * **JUnit 5**
 * **Mockito**
 
