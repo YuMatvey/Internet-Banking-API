@@ -1,6 +1,7 @@
 package com.bankapi.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "bank_account")
@@ -11,24 +12,34 @@ public class BankAccount {
     private Long userId;
 
     @Column(name = "balance", nullable = false)
-    private Double balance;
-
+    private BigDecimal balance;
     public BankAccount() {
     }
 
-    public BankAccount(Double balance) {
+    public BankAccount(BigDecimal balance) {
         this.balance = balance;
     }
+
+
+    public BankAccount(Long userId, BigDecimal balance) {
+        this.userId = userId;
+        this.balance = balance;
+    }
+
 
     public Long getUserId() {
         return userId;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

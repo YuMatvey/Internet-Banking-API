@@ -1,11 +1,25 @@
 package com.bankapi.controller;
 
+import com.bankapi.model.Transaction;
 import com.bankapi.service.BankService;
+import com.bankapi.dto.TransferRequest;
+import com.bankapi.exception.UserNotFoundException;
+import com.bankapi.exception.InsufficientFundsException;
+import com.bankapi.exception.InvalidAmountException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+// import java.util.Collections;
+import java.util.HashMap; // Импорт
+import java.util.List;
+import java.util.Map; // Импорт
+// import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bank")
@@ -14,37 +28,101 @@ public class BankController {
     @Autowired
     private BankService bankService;
     @GetMapping("/balance/{userId}")
-    public Map<String, Object> getBalance(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, Object>> getBalance(@PathVariable Long userId) {
         Map<String, Object> response = new HashMap<>();
-        Double balance = bankService.getBalance(userId);
-        response.put("userId", userId);
-        response.put("balance", balance);
-        if (balance.equals(-1.0)) {
-            response.put("error", "Пользователь не найден");
+        BigDecimal balance = bankService.getBalance(userId);
+
+        if (balance == null) {
+            response.put("status", 0);
+            response.put("message", "Not found user");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } else {
+            response.put("userId", userId);
+            response.put("balance", balance);
+            return ResponseEntity.ok(response);
         }
-        return response;
     }
+
     @PostMapping("/deposit")
-    public Map<String, Object> putMoney(@RequestParam Long userId, @RequestParam Double amount) {
+    public ResponseEntity<Map<String, Object>> putMoney(@RequestParam Long userId, @RequestParam BigDecimal amount) {
         Map<String, Object> response = new HashMap<>();
         int result = bankService.putMoney(userId, amount);
-        response.put("userId", userId);
-        response.put("result", result);
-        if (result == 0) {
-            response.put("error", "Ошибка при выполнении операции пополнения");
+
+        if (result == 1) {
+            response.put("status", 1);
+            response.put("message", "successful");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("status", 0);
+            response.put("message", "fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        return response;
     }
 
     @PostMapping("/withdraw")
-    public Map<String, Object> takeMoney(@RequestParam Long userId, @RequestParam Double amount) {
+    public ResponseEntity<Map<String, Object>> takeMoney(@RequestParam Long userId, @RequestParam BigDecimal amount) {
         Map<String, Object> response = new HashMap<>();
         int result = bankService.takeMoney(userId, amount);
-        response.put("userId", userId);
-        response.put("result", result);
-        if (result == 0) {
-            response.put("error", "Ошибка при выполнении операции снятия средств или недостаточно средств");
+
+        if (result == 1) {
+            response.put("status", 1);
+            response.put("message", "successful");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("status", 0);
+            response.put("message", "fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        return response;
     }
+
+    @GetMapping("/transactions/{userId}")
+    public List<Transaction> getTransactions(
+            @PathVariable Long userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+
+        return bankService.getOperationList(userId, startDate, endDate);
+    }
+
+
+    @PostMapping("/transfer")
+    public ResponseEntity<Map<String, Object>> transfer(@RequestBody TransferRequest request) {
+
+        bankService.transferMoney(request.getSenderId(), request.getReceiverId(), request.getAmount());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 1);
+        response.put("message", "successful");
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFoundException(UserNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 0);
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<Map<String, Object>> handleInsufficientFundsException(InsufficientFundsException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 0);
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(InvalidAmountException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidAmountException(InvalidAmountException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 0);
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 }
