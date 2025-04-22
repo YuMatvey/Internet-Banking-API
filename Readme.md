@@ -410,3 +410,6 @@ mvn test
 psql -U your_username -d your_database_name -h your_host -p your_port -f bank_dump.sql
 ```
 **Обязательно замените** `your_username`, `your_database_name`, `your_host`, `your_port` на актуальные данные вашей установки PostgreSQL.
+## 📷 Скриншоты
+Структура базы данных:  
+![DB Structure](screenshots/db_structure.png)
